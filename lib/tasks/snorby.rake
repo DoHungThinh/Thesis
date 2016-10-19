@@ -21,24 +21,24 @@ require "./lib/snorby/worker"
 
 namespace :snorby do
 
-  desc 'Setup'  
+  desc 'Setup'
   task :setup => :environment do
-        
+
     Rake::Task['secret'].invoke
-    
+
     # Create the snorby database if it does not currently exist
     Rake::Task['db:create'].invoke
-    
-    # Snorby update logic 
+
+    # Snorby update logic
     Rake::Task['snorby:update'].invoke
   end
-  
+
   desc 'Update Snorby'
   task :update => :environment do
 
     # Setup the snorby database
     Rake::Task['db:autoupgrade'].invoke
-    
+
     # Load Default Records
     Rake::Task['db:seed'].invoke
 
@@ -51,7 +51,7 @@ namespace :snorby do
 
     # Setup the snorby database
     Rake::Task['db:autoupgrade'].invoke
-    
+
     # Load Default Records
     Rake::Task['db:seed'].invoke
   end
@@ -67,7 +67,7 @@ namespace :snorby do
     if Snorby::Worker.running?
       exit 0
     end
-    
+
     # otherwise, restart worker.
     Rake::Task['snorby:restart_worker'].invoke
   end
@@ -82,10 +82,10 @@ namespace :snorby do
 
     count = 0
     stopped = false
-    while !stopped 
-      
+    while !stopped
+
       stopped = true unless Snorby::Worker.running?
-      sleep 5 
+      sleep 5
 
       count += 1
       if count > 10
@@ -100,13 +100,13 @@ namespace :snorby do
 
       puts "* Starting the Snorby worker process."
       Snorby::Worker.start
-      
+
       count = 0
       ready = false
-      while !ready 
-        
+      while !ready
+
         ready = true if Snorby::Worker.running?
-        sleep 5 
+        sleep 5
 
         count += 1
         if count > 10
@@ -126,10 +126,10 @@ namespace :snorby do
     end
 
   end
-  
+
   desc 'Soft Reset - Reset Snorby metrics'
   task :soft_reset => :environment do
-    
+
     # Reset Counter Cache Columns
     puts 'Reseting Snorby metrics and counter cache columns'
     Severity.update!(:events_count => 0)
@@ -139,16 +139,20 @@ namespace :snorby do
     puts 'This could take awhile. Please wait while the Snorby cache is rebuilt.'
     Snorby::Worker.reset_cache(:all, true)
   end
-  
+
   desc 'Hard Reset - Rebuild Snorby Database'
   task :hard_reset => :environment do
-    
+
     # Drop the snorby database if it exists
     Rake::Task['db:drop'].invoke
-    
+
     # Invoke the snorby:setup rake task
     Rake::Task['snorby:setup'].invoke
-    
+
   end
-  
+
+  desc 'Update Snort Rule Through PulledPork'
+  task :update_rules_through_pulledpork, [:arg1] do |t, args|
+    system "echo #{args[:arg1]} | sudo -S /usr/local/bin/pulledpork.pl -c /etc/snort/pulledpork.conf -l"
+  end
 end
