@@ -155,4 +155,23 @@ namespace :snorby do
   task :update_rules_through_pulledpork, [:arg1] do |t, args|
     system "echo #{args[:arg1]} | sudo -S /usr/local/bin/pulledpork.pl -c /etc/snort/pulledpork.conf -l"
   end
+
+  desc 'Restart Snort in IDS mode'
+  task :restart_snort_ids, [:arg1] do |t, args|
+    system "echo #{args[:arg1]} | sudo -S service snortautorun stop | sleep 3"
+    system "echo #{args[:arg1]} | sudo -S service uncomment 166,167 /etc/snort/snort.conf"
+    system "echo #{args[:arg1]} | sudo -S service uncomment 20,22 /etc/init.d/snortautorun"
+    system "echo #{args[:arg1]} | sudo -S service comment 166,167 /etc/snort/snort.conf"
+    system "echo #{args[:arg1]} | sudo -S service comment 20 /etc/init.d/snortautorun"
+    system "echo #{args[:arg1]} | sudo -S service snortautorun start"
+  end
+
+  desc 'Restart Snort in IPS mode'
+  task :restart_snort_ips, [:arg1] do |t, args|
+    system "echo #{args[:arg1]} | sudo -S service snortautorun stop | sleep 3"
+    system "echo #{args[:arg1]} | sudo -S service uncomment 166,167 /etc/snort/snort.conf"
+    system "echo #{args[:arg1]} | sudo -S service uncomment 20,22 /etc/init.d/snortautorun"
+    system "echo #{args[:arg1]} | sudo -S service comment 22 /etc/init.d/snortautorun"
+    system "echo #{args[:arg1]} | sudo -S service snortautorun start"
+  end
 end

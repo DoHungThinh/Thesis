@@ -144,6 +144,7 @@ Snorby::Application.routes.draw do
   resources :rules do
     collection do
       get :auto_update_rules
+      get :listing_rules
     end
   end
 end
