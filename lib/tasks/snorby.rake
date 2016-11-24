@@ -174,4 +174,43 @@ namespace :snorby do
     system "echo #{args[:arg1]} | sudo -S service comment 22 /etc/init.d/snortautorun"
     system "echo #{args[:arg1]} | sudo -S service snortautorun start"
   end
+
+  desc 'Create snortautorun service'
+  task :create_snortautorun_file, [:arg1] do |t, args|
+    File.open("/var/www/html/snorby/app/sevices/snortautorun", "rb") do |input|
+      File.open("/etc/init.d/snortautorun", "wb") do |output|
+        while buff = input.read(4096)
+          output.write(buff)
+        end
+      end
+    end
+    system "echo #{args[:arg1]} | sudo chmod +x /etc/init.d/snortautorun"
+    system "initctl list | grep snortautorun"
+  end
+
+  desc 'Create comment service'
+  task :create_comment_file, [:arg1] do |t, args|
+    File.open("/var/www/html/snorby/app/sevices/comment", "rb") do |input|
+      File.open("/etc/init.d/comment", "wb") do |output|
+        while buff = input.read(4096)
+          output.write(buff)
+        end
+      end
+    end
+    system "echo #{args[:arg1]} | sudo chmod +x /etc/init.d/comment"
+    system "initctl list | grep comment"
+  end
+
+  desc 'Create uncomment service'
+  task :create_uncomment_file, [:arg1] do |t, args|
+    File.open("/var/www/html/snorby/app/sevices/uncomment", "rb") do |input|
+      File.open("/etc/init.d/uncomment", "wb") do |output|
+        while buff = input.read(4096)
+          output.write(buff)
+        end
+      end
+    end
+    system "echo #{args[:arg1]} | sudo chmod +x /etc/init.d/uncomment"
+    system "initctl list | grep uncomment"
+  end
 end

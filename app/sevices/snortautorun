@@ -1,0 +1,49 @@
+#!/bin/bash
+### BEGIN INIT INFO
+# Provides:          scriptname
+# Required-Start:    $remote_fs $syslog
+# Required-Stop:     $remote_fs $syslog
+# Default-Start:     2 3 4 5
+# Default-Stop:      0 1 6
+# Short-Description: Start daemon at boot time
+# Description:       Enable service provided by daemon.
+### END INIT INFO
+
+
+case "$1" in
+  start)
+    if ps -C snort> /dev/null; then
+    echo "SNORT is already running"
+
+    else
+
+#    sudo /usr/local/bin/snort -Q -u snort -c /etc/snort/snort.conf -i eth0:wlan0 -D
+
+    sudo /usr/local/bin/snort -q -u snort -g snort -c /etc/snort/snort.conf -i wlan0 -D
+
+    echo "SNORT is ON"
+    fi
+    ;;
+  stop)
+
+    if ps -C snort> /dev/null; then
+    sudo rm /var/run/snort_eth0.pid
+    sudo rm /var/run/snort_eth0.pid.lck
+    sudo rm /var/run/snort_eth0:wlan0.pid
+    sudo rm /var/run/snort_eth0:wlan0.pid.lck
+    echo "Stopping SNORT"
+    sudo pkill snort
+
+else
+
+    echo "SNORT is already OFF"
+
+    fi
+    ;;
+  *)
+        echo "Usage: /etc/init.d/snortautorun {start|stop}"
+        exit 1
+        ;;
+esac
+
+exit 0
