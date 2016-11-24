@@ -4,7 +4,7 @@ require "pathname"
 module Snorby
   # Rule
   module Rule
-   
+
     def self.paths=(path)
       @path ||= path
     end
@@ -29,23 +29,23 @@ module Snorby
         @generator_id = options.fetch(:generator_id, 0).to_i
         @revision_id = options.fetch(:revision_id, 0).to_i
         @rule = false
-       
-        @generator_id = nil if @generator_id.zero? || @generator_id == 1 
+
+        @generator_id = nil if @generator_id.zero? || @generator_id == 1
         @revision_id = nil if @revision_id.zero?
-        
+
         search_for_rule
       end
 
       def search_for_rule
         if Snorby::Rule.paths.is_a?(Array)
-
+          Snorby::Rule.paths << "/etc/snort/rules"
           Snorby::Rule.paths.each do |path|
             return @rule if @rule
             pathname = Pathname.new(path)
             search(pathname)
           end
         else
-          
+
           search(Snorby::Rule.paths)
         end
 
@@ -65,23 +65,23 @@ module Snorby
         Dir.glob(path + '*').each do |file|
           return @rule if @rule
           path = Pathname.new(file)
-         
+
           if File.extname(path) == ".rules"
             file = File.open(path)
-            
+
             file.each_line do |line|
               return @rule if @rule
 
               next if line.match(/^\#/)
               next unless line.match(/sid\:#{@rule_id}\;/)
-              
+
 
               if @revision_id
                 next unless line.match(/rev\:#{@revision_id}\;/)
               end
-              
+
               if @generator_id
-                next unless line.match(/gid\:#{@generator_id}\;/)
+                next unless line.match(/GID\:#{@generator_id}\;/)
               end
 
               @rule = line

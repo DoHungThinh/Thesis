@@ -14,11 +14,11 @@ Snorby::Application.routes.draw do
 
   resources :classifications
 
-  devise_for :users, :path_names => { :sign_in => 'login', 
-    :sign_out => 'logout', 
-    :sign_up => 'register' }, :controllers => { 
+  devise_for :users, :path_names => { :sign_in => 'login',
+    :sign_out => 'logout',
+    :sign_up => 'register' }, :controllers => {
       :registrations => "registrations",
-      :sessions => "sessions", 
+      :sessions => "sessions",
       :passwords => 'passwords'
     } do
     get "/login" => "devise/sessions#new"
@@ -51,7 +51,7 @@ Snorby::Application.routes.draw do
     collection do
       get :search
     end
-    
+
   end
 
   resources :severities do
@@ -66,7 +66,7 @@ Snorby::Application.routes.draw do
   match '/search/json', :controller => "Page", :action => 'search_json'
 
   resources :saved_searches, :path => "/saved/searches" do
-    
+
     collection do
       post :title
       post :update
@@ -94,11 +94,11 @@ Snorby::Application.routes.draw do
   end
 
   resources :events do
-    
+
     resources :notes do
-      
+
     end
-    
+
     collection do
       get :sessions
       get :view
@@ -121,9 +121,9 @@ Snorby::Application.routes.draw do
       get :since
       get :activity
     end
-    
+
   end
-  
+
   resources :notes
 
   resources :users do
@@ -141,4 +141,10 @@ Snorby::Application.routes.draw do
     end
   end
 
+  resources :rules do
+    collection do
+      get :auto_update_rules
+      get :listing_rules
+    end
+  end
 end
